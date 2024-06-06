@@ -8,19 +8,22 @@
 #include <inttypes.h>
 
 #define LISTEN_PORT 8080
-#define BUFFER_SIZE 2048
+#define BUFFER_SIZE 1024
 
 int8_t receive_client_data(int32_t sock_fd, char *buffer)
 {
+    memset(buffer, 0, BUFFER_SIZE);
+
     ssize_t recv_result = recv(sock_fd, buffer, BUFFER_SIZE - 1, 0);
     if (recv_result == -1) {
         perror("recv() error");
         return -1;
     }
 
-    buffer[BUFFER_SIZE] = '\0';
+    buffer[recv_result] = '\0';
 
     printf("received: %s\n", buffer);
+    printf("buffer size: %zd\n", strlen(buffer));
 
     return 0; 
 }
@@ -76,7 +79,7 @@ int main()
 
         close(accept_sock_fd);
 
-        printf("%d\n", i);
+        printf("[Request number: %d]\n", i);
         i += 1;
     }
     
